@@ -1,5 +1,5 @@
 CC:=g++
-CCFLAGS:= 
+CCFLAGS:=
 LDFLAGS:=
 
 TARGETS_DIR:=./bin
@@ -9,7 +9,7 @@ SRC_DIR=./src
 TARGETS:=$(TARGETS_DIR)/ftfc
 MAINS:=$(OBJ_DIR)/main.o
 OBJ:=$(OBJ_DIR)/options.o $(OBJ_DIR)/compress.o $(OBJ_DIR)/decompress.o
-DEPS:=$(SRC_DIR)/exit_status.h $(SRC_DIR)/options.h $(SRC_DIR)/compress.h $(SRC_DIR)/decompress.h
+DEPS:=$(SRC_DIR)/user_defined.hpp $(SRC_DIR)/exit_status.h $(SRC_DIR)/options.h $(SRC_DIR)/compress.h $(SRC_DIR)/decompress.h
 
 .PHONY:all clean
 

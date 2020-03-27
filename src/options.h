@@ -6,7 +6,7 @@
  * 参数表：参数
  * 返回值：选项
  */
-char GetOpt(char*);
+char GetOpt(char *);
 
 /**
  * 打印帮助信息
