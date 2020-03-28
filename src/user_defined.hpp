@@ -38,10 +38,11 @@ void GetCurrentWeld(int t, double &x, double &y, double &z) {
 
 /**
  * 获得准稳态时间步区间[lo, hi)
- * 参数表：准稳态开始、结束时间步
+ * 参数表：准稳态开始、被选成零状态的时间步、结束时间步
  */
-void GetQuasiSteadyTimeStep(int &lo, int &hi) {
+void GetQuasiSteadyStateInterval(int &lo, int &mi, int &hi) {
   lo = 57;
+  mi = 97;
   hi = 117;
 }
 

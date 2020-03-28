@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
       i++;
       break;
     case 'c':
-      CompressTempField(argv[i + 1], std::atoi(argv[i + 2]), argv[i + 3]);
+      Compress(argv[i + 1], std::atoi(argv[i + 2]), argv[i + 3]);
       i += 4;
       break;
     case 'd':
