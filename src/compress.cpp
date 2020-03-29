@@ -16,9 +16,10 @@ const std::string QSSFilename =
 
 /**
  * 读入准稳态零状态数据帧，初始化准稳态下搅拌头坐标系温度场
- * 参数表：数据帧目录、输出目录、存储搅拌头坐标系温度场的地址
+ * 参数表：输入目录、输出目录、准稳态零状态时间步、存储搅拌头坐标系温度场的地址
  */
-void InitQuasiSteadyStateMap(const char *, const char *, std::map<V3, short> &);
+void InitQuasiSteadyStateMap(const char *, const char *, int,
+                             std::map<V3, short> &);
 
 /**
  * 读入第1帧数据，初始化体积元的坐标和初始温度
@@ -39,12 +40,12 @@ void UpdateQuasiSteadyState(std::string, const char *, int,
  */
 void UpdateNonSteadyState(std::string, const char *, int, std::vector<short> &);
 
-void Compress(const char *inputDir, int n, const char *outputDir) {
+void Compress(const char *inputDir, const char *outputDir) {
   std::vector<short> pred;    /* 每个时间步压缩完毕存储温度场 */
   std::map<V3, short> QSSMap; /* 搅拌头坐标系温度场零状态 */
-  InitQuasiSteadyStateMap(inputDir, outputDir, QSSMap);
-  int lo, mi, hi;
+  int n = GetNumOfTimeSteps(), lo, mi, hi;
   GetQuasiSteadyStateInterval(lo, mi, hi);
+  InitQuasiSteadyStateMap(inputDir, outputDir, mi, QSSMap);
   for (int i = 0; i < n; i++) {
     std::string inputFile = GetFilename(i).insert(0, "/");
     inputFile.insert(0, inputDir);
@@ -59,10 +60,8 @@ void Compress(const char *inputDir, int n, const char *outputDir) {
 }
 
 void InitQuasiSteadyStateMap(const char *inputDir, const char *outputDir,
-                             std::map<V3, short> &QSSMap) {
-  int lo, mi, hi;
+                             int mi, std::map<V3, short> &QSSMap) {
   double x0, y0, z0;
-  GetQuasiSteadyStateInterval(lo, mi, hi);
   GetCurrentWeld(mi, x0, y0, z0);
   std::string inputFile = GetFilename(mi).insert(0, "/");
   inputFile.insert(0, inputDir);

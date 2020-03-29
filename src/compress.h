@@ -2,9 +2,9 @@
 #define __COMPRESS_H__
 
 /**
- * 压缩数据帧
- * 参数表：数据帧目录、数据帧数目、输出目录
+ * 压缩温度场数据
+ * 参数表：输入目录、输出目录
  */
-void Compress(const char *, int, const char *);
+void Compress(const char *, const char *);
 
 #endif
