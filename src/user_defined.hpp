@@ -3,17 +3,21 @@
 
 #include <algorithm>
 #include <string>
+#include <vector>
 
 /**
  * 这些函数支持用户实现，它们能提高压缩表现
  *
- * 获得时间步数目，含零时间步
- * 例如，温度场数据文件是000.txt~143.txt，返回值是144
+ * 获得存储坐标的文件名，请任意指定
+ * 返回值：文件名
  */
-int GetNumOfTimeSteps() { return 144; }
+std::string GetCoorFilename() {
+  std::string s("coor.txt");
+  return s;
+}
 
 /**
- * 获得指定时间步的文件名
+ * 获得指定时间步的文件名，例如第2个时间步的数据文件名被指定成002.txt
  * 参数表：时间步
  * 返回值：文件名
  */
@@ -43,13 +47,14 @@ void GetCurrentWeld(int t, double &x, double &y, double &z) {
 }
 
 /**
- * 获得准稳态时间步区间[lo, hi)
- * 参数表：准稳态开始、被选成零状态的时间步、结束时间步
+ * 获得准稳态时间步区间[0, lo, mi1, mi2, ... ,mi(n-1), hi, N)
+ * 向量的元素单调递增，至少包含“0”和“N”
+ * 向量顺序前2个元素分别是0和准稳态开始时间步，逆序前2个元素分别是时间步数目和准稳态结束时间步
+ * 返回值：时间步向量
  */
-void GetQuasiSteadyStateInterval(int &lo, int &mi, int &hi) {
-  lo = 57;
-  mi = 97;
-  hi = 117;
+std::vector<int> GetTimeStepsVector() {
+  std::vector<int> v({0, 57, 77, 97, 117, 144});
+  return v;
 }
 
 #endif
