@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "exit_status.h"
-#include "user_defined.hpp"
-#include "vector3.hpp"
+#include "user_defined.h"
+#include "vector3.h"
 
 /**
  * 读入第1帧数据，初始化体积元的坐标和初始温度
@@ -47,7 +47,7 @@ void Compress(const char *inputDir, const char *outputDir) {
       std::string outputFile = std::to_string(j).insert(0, "/");
       outputFile.insert(0, outputDir);
       if (i == 0 || i == tSVector.size() - 2) /* 非稳态 */ {
-        if (j == 0) {
+        if (j == tSVector.front()) {
           std::string coorFile = GetCoorFilename().insert(0, "/");
           coorFile.insert(0, outputDir);
           Init(inputFile, coorFile, outputFile, pred);
@@ -119,10 +119,8 @@ void InitQuasiSteadyState(std::string inputFile, std::string outputFile, int ts,
   while (!fin.eof()) {
     fin >> y >> z >> t;
     currT = (short)(t + 0.5);
-    if (currT != pred[i]) {
-      fout << i << "\t" << currT << std::endl;
-      pred[i] = currT;
-    }
+    fout << currT - pred[i] << std::endl;
+    pred[i] = currT;
     V3 v(x - x0, y - y0, z - z0);
     qSSMap[v] = currT;
     fin >> x;
@@ -142,10 +140,8 @@ void UpdateNonSteadyState(std::string inputFile, std::string outputFile, int ts,
   for (int i = 0; i < pred.size(); i++) {
     fin >> x >> y >> z >> t;
     currT = (short)(t + 0.5);
-    if (currT != pred[i]) {
-      fout << i << "\t" << currT << std::endl;
-      pred[i] = currT;
-    }
+    fout << currT - pred[i] << std::endl;
+    pred[i] = currT;
   }
   fin.close();
   fout.close();
@@ -165,13 +161,8 @@ void UpdateQuasiSteadyState(std::string inputFile, std::string outputFile,
     V3 v(x - x0, y - y0, z - z0);
     auto j = qSSMap.find(v);
     // 输出的情形：1. 搜索到且在搅拌头坐标系温度变化；2. 没有搜索到且温度变化
-    if (j != qSSMap.end() && currT != j->second ||
-        j == qSSMap.end() && currT != pred[i]) {
-      fout << i << "\t" << currT << std::endl;
-    }
-    if (currT != pred[i]) {
-      pred[i] = currT;
-    }
+    fout << (currT - (j == qSSMap.end() ? pred[i] : j->second)) << std::endl;
+    pred[i] = currT;
   }
   fin.close();
   fout.close();

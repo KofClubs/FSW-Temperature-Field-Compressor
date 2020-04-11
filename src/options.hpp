@@ -51,7 +51,7 @@ void PrintHelpInfo() {
 void PrintVerInfo() {
   std::cout << "ftfc - FSW Temperature Field Compressor" << std::endl;
   std::cout << "综合论文训练，搅拌摩擦焊工件温度场仿真数据压缩器" << std::endl;
-  std::cout << "版本：0.3.3" << std::endl;
+  std::cout << "版本：0.3.4" << std::endl;
 }
 
 #endif
