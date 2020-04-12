@@ -2,11 +2,6 @@
 
 #include <algorithm>
 
-std::string GetCoorFilename() {
-  std::string s("coor.txt");
-  return s;
-}
-
 std::string GetFilename(int t) {
   char a, b, c;
   a = (char)(t / 100);

@@ -36,6 +36,9 @@ char GetOpt(char *arg) {
  * 打印帮助信息
  */
 void PrintHelpInfo() {
+  std::cout << "ftfc - FSW Temperature Field Compressor" << std::endl;
+  std::cout << "综合论文训练，搅拌摩擦焊工件温度场仿真数据压缩器" << std::endl;
+  std::cout << "Copyright (C) Zhang Zhanpeng" << std::endl;
   std::cout << "用法: ftfc [-选项] [参数表]" << std::endl;
   std::cout << "选项包括且限于:" << std::endl;
   std::cout << "-h\n\t在命令行打印帮助信息" << std::endl;
@@ -51,7 +54,9 @@ void PrintHelpInfo() {
 void PrintVerInfo() {
   std::cout << "ftfc - FSW Temperature Field Compressor" << std::endl;
   std::cout << "综合论文训练，搅拌摩擦焊工件温度场仿真数据压缩器" << std::endl;
-  std::cout << "版本：0.3.4" << std::endl;
+  std::cout << "Copyright (C) Zhang Zhanpeng" << std::endl;
+  std::cout << "版本：0.4.0" << std::endl;
+  std::cout << "使用选项-h获得帮助" << std::endl;
 }
 
 #endif
