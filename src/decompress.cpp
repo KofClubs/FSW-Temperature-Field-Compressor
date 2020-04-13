@@ -1,5 +1,6 @@
 #include "decompress.h"
 
+#include <cstddef>
 #include <fstream>
 #include <map>
 #include <string>
@@ -9,26 +10,33 @@
 #include "vector3.h"
 
 void Decompress(const char *inputDir, const char *outputDir) {
-  std::string **coor;
   int numOfVoxel;
-  std::string coorFile("/coor.txt"), numOfVoxelFile("/nov.txt");
-  coorFile.insert(0, inputDir);
+  std::string numOfVoxelFile("/nov.txt"), coorFile("/coor.txt");
   numOfVoxelFile.insert(0, inputDir);
-  std::ifstream finCoor(coorFile);
+  coorFile.insert(0, inputDir);
   std::ifstream finNOV(numOfVoxelFile);
+  std::ifstream finCoor(coorFile);
   finNOV >> numOfVoxel;
-  coor = new std::string *[numOfVoxel];
+  finNOV.close();
+  std::string **coor = new std::string *[numOfVoxel];
   for (int i = 0; i < numOfVoxel; i++) {
     coor[i] = new std::string[3];
   }
   std::string x, y, z;
-  short t;
   for (int i = 0; i < numOfVoxel; i++) {
     finCoor >> x >> y >> z;
-    coor[i][0] = (x == "*" ? coor[i - 1][0] : x);
-    coor[i][1] = (y == "*" ? coor[i - 1][1] : y);
-    coor[i][2] = (z == "*" ? coor[i - 1][2] : z);
+    if (i == 0) {
+      coor[i][0] = x;
+      coor[i][1] = y;
+      coor[i][2] = z;
+    } else {
+      coor[i][0] = (x == "*" ? coor[i - 1][0] : x);
+      coor[i][1] = (y == "*" ? coor[i - 1][1] : y);
+      coor[i][2] = (z == "*" ? coor[i - 1][2] : z);
+    }
   }
+  finCoor.close();
+  short t;
   std::vector<short> pred;
   std::vector<int> tSVector = GetTimeStepsVector();
   std::map<V3, short> qSSMap;
@@ -55,7 +63,7 @@ void Decompress(const char *inputDir, const char *outputDir) {
           for (int k = 0; k < numOfVoxel; k++) {
             if (bm.check(k)) {
               finTemp >> t;
-              pred[k] = t;
+              pred[k] += t;
             }
             fout << coor[k][0] << "\t" << coor[k][1] << "\t" << coor[k][2]
                  << "\t" << pred[k] << std::endl;
@@ -70,7 +78,7 @@ void Decompress(const char *inputDir, const char *outputDir) {
           for (int k = 0; k < numOfVoxel; k++) {
             if (bm.check(k)) {
               finTemp >> t;
-              pred[k] = t;
+              pred[k] += t;
             }
             fout << coor[k][0] << "\t" << coor[k][1] << "\t" << coor[k][2]
                  << "\t" << pred[k] << std::endl;
@@ -87,13 +95,21 @@ void Decompress(const char *inputDir, const char *outputDir) {
               pred[k] = l->second;
             } else if (bm.check(k)) {
               finTemp >> t;
-              pred[k] = t;
+              pred[k] += t;
             }
             fout << coor[k][0] << "\t" << coor[k][1] << "\t" << coor[k][2]
                  << "\t" << pred[k] << std::endl;
           }
         }
       }
+      finTemp.close();
+      fout.close();
     }
   }
+  for (int i = 0; i < numOfVoxel; i++) {
+    delete[] coor[i];
+    coor[i] = NULL;
+  }
+  delete[] coor;
+  coor = NULL;
 }

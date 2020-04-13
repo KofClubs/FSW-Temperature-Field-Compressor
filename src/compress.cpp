@@ -135,7 +135,7 @@ void InitQuasiSteadyState(std::string inputFile, std::string tempFile,
     fin >> x >> y >> z >> t;
     currT = (short)(t + 0.5);
     if (currT != pred[i]) {
-      foutTemp << currT << std::endl;
+      foutTemp << currT - pred[i] << std::endl;
       pred[i] = currT;
       bm.set(i);
     }
@@ -160,7 +160,7 @@ void UpdateNonSteadyState(std::string inputFile, std::string tempFile,
     fin >> x >> y >> z >> t;
     currT = (short)(t + 0.5);
     if (currT != pred[i]) {
-      foutTemp << currT << std::endl;
+      foutTemp << currT - pred[i] << std::endl;
       pred[i] = currT;
       bm.set(i);
     }
@@ -188,7 +188,7 @@ void UpdateQuasiSteadyState(std::string inputFile, std::string tempFile,
     // 输出的情形：1. 搜索到且在搅拌头坐标系温度变化；2. 没有搜索到且温度变化
     if (j != qSSMap.end() && currT != j->second ||
         j == qSSMap.end() && currT != pred[i]) {
-      foutTemp << currT << std::endl;
+      foutTemp << currT - pred[i] << std::endl;
       bm.set(i);
     }
     pred[i] = currT;
