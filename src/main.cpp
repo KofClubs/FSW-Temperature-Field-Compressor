@@ -2,6 +2,7 @@
 #include <cstring>
 #include <iostream>
 
+#include "check.h"
 #include "compress.h"
 #include "decompress.h"
 #include "exit_status.h"
@@ -29,6 +30,10 @@ int main(int argc, char **argv) {
       break;
     case 'd':
       Decompress(argv[i + 1], argv[i + 2]);
+      i += 3;
+      break;
+    case 'q':
+      Check(argv[i + 1], argv[i + 2]);
       i += 3;
     }
   }

@@ -47,8 +47,8 @@ void Compress(const char *inputDir, const char *outputDir) {
     for (int j = tSVector[i]; j < tSVector[i + 1]; j++) {
       std::string inputFile = GetFilename(j).insert(0, "/");
       inputFile.insert(0, inputDir);
-      std::string outputFile = std::to_string(j).insert(0, "/t-");
-      outputFile.insert(0, outputDir);
+      std::string tempFile = std::to_string(j).insert(0, "/t-");
+      tempFile.insert(0, outputDir);
       std::string bitmapFile = std::to_string(j).insert(0, "/b-");
       bitmapFile.insert(0, outputDir);
       int numOfVoxel = 0;
@@ -57,16 +57,16 @@ void Compress(const char *inputDir, const char *outputDir) {
           std::string coorFile("/coor.txt"), numOfVoxelFile("/nov.txt");
           coorFile.insert(0, outputDir);
           numOfVoxelFile.insert(0, outputDir);
-          Init(inputFile, coorFile, outputFile, numOfVoxelFile, pred);
+          Init(inputFile, coorFile, tempFile, numOfVoxelFile, pred);
         } else {
-          UpdateNonSteadyState(inputFile, outputFile, bitmapFile, j, pred);
+          UpdateNonSteadyState(inputFile, tempFile, bitmapFile, j, pred);
         }
       } else /* 准稳态 */ {
         if (j == tSVector[i]) {
-          InitQuasiSteadyState(inputFile, outputFile, bitmapFile, j, pred,
+          InitQuasiSteadyState(inputFile, tempFile, bitmapFile, j, pred,
                                qSSMap);
         } else {
-          UpdateQuasiSteadyState(inputFile, outputFile, bitmapFile, j, pred,
+          UpdateQuasiSteadyState(inputFile, tempFile, bitmapFile, j, pred,
                                  qSSMap);
         }
       }
@@ -74,11 +74,11 @@ void Compress(const char *inputDir, const char *outputDir) {
   }
 }
 
-void Init(std::string inputFile, std::string coorFile, std::string outputFile,
+void Init(std::string inputFile, std::string coorFile, std::string tempFile,
           std::string numOfVoxelFile, std::vector<short> &pred) {
   std::ifstream fin(inputFile);
   std::ofstream foutCoor(coorFile);
-  std::ofstream foutTemp(outputFile);
+  std::ofstream foutTemp(tempFile);
   std::ofstream foutNOV(numOfVoxelFile);
   if (!fin.is_open()) {
     exit(DATA_FILE_NOT_FOUND);
@@ -119,14 +119,14 @@ void Init(std::string inputFile, std::string coorFile, std::string outputFile,
   foutNOV.close();
 }
 
-void InitQuasiSteadyState(std::string inputFile, std::string outputFile,
+void InitQuasiSteadyState(std::string inputFile, std::string tempFile,
                           std::string bitmapFile, int ts,
                           std::vector<short> &pred,
                           std::map<V3, short> &qSSMap) {
   double x0, y0, z0;
   GetCurrentWeld(ts, x0, y0, z0);
   std::ifstream fin(inputFile);
-  std::ofstream foutTemp(outputFile);
+  std::ofstream foutTemp(tempFile);
   double x, y, z, t;
   short currT;
   qSSMap.clear();
@@ -135,7 +135,7 @@ void InitQuasiSteadyState(std::string inputFile, std::string outputFile,
     fin >> x >> y >> z >> t;
     currT = (short)(t + 0.5);
     if (currT != pred[i]) {
-      foutTemp << currT - pred[i] << std::endl;
+      foutTemp << currT << std::endl;
       pred[i] = currT;
       bm.set(i);
     }
@@ -147,11 +147,11 @@ void InitQuasiSteadyState(std::string inputFile, std::string outputFile,
   foutTemp.close();
 }
 
-void UpdateNonSteadyState(std::string inputFile, std::string outputFile,
+void UpdateNonSteadyState(std::string inputFile, std::string tempFile,
                           std::string bitmapFile, int ts,
                           std::vector<short> &pred) {
   std::ifstream fin(inputFile);
-  std::ofstream foutTemp(outputFile);
+  std::ofstream foutTemp(tempFile);
   std::string x, y, z;
   double t;
   short currT;
@@ -160,7 +160,7 @@ void UpdateNonSteadyState(std::string inputFile, std::string outputFile,
     fin >> x >> y >> z >> t;
     currT = (short)(t + 0.5);
     if (currT != pred[i]) {
-      foutTemp << currT - pred[i] << std::endl;
+      foutTemp << currT << std::endl;
       pred[i] = currT;
       bm.set(i);
     }
@@ -170,12 +170,12 @@ void UpdateNonSteadyState(std::string inputFile, std::string outputFile,
   foutTemp.close();
 }
 
-void UpdateQuasiSteadyState(std::string inputFile, std::string outputFile,
+void UpdateQuasiSteadyState(std::string inputFile, std::string tempFile,
                             std::string bitmapFile, int ts,
                             std::vector<short> &pred,
                             const std::map<V3, short> &qSSMap) {
   std::ifstream fin(inputFile);
-  std::ofstream foutTemp(outputFile);
+  std::ofstream foutTemp(tempFile);
   double x, y, z, t, x0, y0, z0;
   short currT;
   GetCurrentWeld(ts, x0, y0, z0);
@@ -186,9 +186,9 @@ void UpdateQuasiSteadyState(std::string inputFile, std::string outputFile,
     V3 v(x - x0, y - y0, z - z0);
     auto j = qSSMap.find(v);
     // 输出的情形：1. 搜索到且在搅拌头坐标系温度变化；2. 没有搜索到且温度变化
-    if (j != qSSMap.end() && j->second != pred[i] ||
+    if (j != qSSMap.end() && currT != j->second ||
         j == qSSMap.end() && currT != pred[i]) {
-      foutTemp << currT - pred[i] << std::endl;
+      foutTemp << currT << std::endl;
       bm.set(i);
     }
     pred[i] = currT;

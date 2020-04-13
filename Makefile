@@ -8,7 +8,7 @@ SRC_DIR=./src
 
 TARGETS:=$(TARGETS_DIR)/ftfc
 MAINS:=$(OBJ_DIR)/main.o
-OBJ:=$(OBJ_DIR)/user_defined.o $(OBJ_DIR)/bitmap.o $(OBJ_DIR)/vector3.o $(OBJ_DIR)/compress.o $(OBJ_DIR)/decompress.o
+OBJ:=$(OBJ_DIR)/user_defined.o $(OBJ_DIR)/bitmap.o $(OBJ_DIR)/vector3.o $(OBJ_DIR)/compress.o $(OBJ_DIR)/decompress.o $(OBJ_DIR)/check.o
 
 .PHONY:all clean
 
@@ -35,5 +35,8 @@ $(OBJ_DIR)/vector3.o:$(SRC_DIR)/vector3.cpp $(SRC_DIR)/vector3.h
 $(OBJ_DIR)/compress.o:$(SRC_DIR)/compress.cpp $(SRC_DIR)/compress.h $(SRC_DIR)/bitmap.h $(SRC_DIR)/exit_status.h $(SRC_DIR)/user_defined.h $(SRC_DIR)/vector3.h
 	$(CC) -c -o $(OBJ_DIR)/compress.o $(SRC_DIR)/compress.cpp
 
-$(OBJ_DIR)/decompress.o:$(SRC_DIR)/decompress.cpp $(SRC_DIR)/decompress.h
+$(OBJ_DIR)/decompress.o:$(SRC_DIR)/decompress.cpp $(SRC_DIR)/decompress.h $(SRC_DIR)/bitmap.h $(SRC_DIR)/user_defined.h $(SRC_DIR)/vector3.h
 	$(CC) -c -o $(OBJ_DIR)/decompress.o $(SRC_DIR)/decompress.cpp
+
+$(OBJ_DIR)/check.o:$(SRC_DIR)/check.cpp $(SRC_DIR)/check.h $(SRC_DIR)/user_defined.h
+	$(CC) -c -o $(OBJ_DIR)/check.o $(SRC_DIR)/check.cpp
