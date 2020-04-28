@@ -24,6 +24,12 @@ void GetCurrentWeld(int t, double &x, double &y, double &z) {
 }
 
 std::vector<int> GetTimeStepsVector() {
-  std::vector<int> v({0, 57, 77, 97, 117, 144});
-  return v;
+  return std::vector<int>({0, 57, 77, 97, 117, 144});
+}
+
+double GetPrec(double x, double y, double z) {
+  if (y < -0.020 || y > 0.020) {
+    return 4.0;
+  }
+  return 1.0;
 }

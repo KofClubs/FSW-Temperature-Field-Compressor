@@ -21,4 +21,5 @@ for file in dirs:
     for line in fin:
         freq = update_dict(line, freq)
 sorted_freq = sorted(freq.items(), key=lambda d: d[1])
+print("字符频数（升序）：")
 print(sorted_freq)

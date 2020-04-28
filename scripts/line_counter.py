@@ -12,4 +12,4 @@ for file in dirs:
     fin = open(file)
     for line in fin.readlines():
         result = result + 1
-print(result)
+print("行总数：", result)

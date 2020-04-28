@@ -60,7 +60,7 @@ void PrintVerInfo() {
   std::cout << "ftfc - FSW Temperature Field Compressor" << std::endl;
   std::cout << "综合论文训练，搅拌摩擦焊工件温度场仿真数据压缩器" << std::endl;
   std::cout << "Copyright (C) 张展鹏" << std::endl;
-  std::cout << "版本：0.5.1" << std::endl;
+  std::cout << "版本：0.6.0" << std::endl;
   std::cout << "使用选项-h获得帮助" << std::endl;
 }
 

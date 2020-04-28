@@ -27,4 +27,11 @@ void GetCurrentWeld(int, double &, double &, double &);
  */
 std::vector<int> GetTimeStepsVector();
 
+/**
+ * 获得指定坐标体元的精度
+ * 参数表：X、Y、Z坐标
+ * 返回值：精度
+ */
+double GetPrec(double, double, double);
+
 #endif

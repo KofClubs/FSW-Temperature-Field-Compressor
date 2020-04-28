@@ -4,8 +4,10 @@
 #include <fstream>
 #include <map>
 #include <string>
+#include <vector>
 
 #include "bitmap.h"
+#include "temperature.h"
 #include "user_defined.h"
 #include "vector3.h"
 
@@ -25,21 +27,16 @@ void Decompress(const char *inputDir, const char *outputDir) {
   std::string x, y, z;
   for (int i = 0; i < numOfVoxel; i++) {
     finCoor >> x >> y >> z;
-    if (i == 0) {
-      coor[i][0] = x;
-      coor[i][1] = y;
-      coor[i][2] = z;
-    } else {
-      coor[i][0] = (x == "*" ? coor[i - 1][0] : x);
-      coor[i][1] = (y == "*" ? coor[i - 1][1] : y);
-      coor[i][2] = (z == "*" ? coor[i - 1][2] : z);
-    }
+    coor[i][0] = (i > 0 && x == "*" ? coor[i - 1][0] : x);
+    coor[i][1] = (i > 0 && y == "*" ? coor[i - 1][1] : y);
+    coor[i][2] = (i > 0 && z == "*" ? coor[i - 1][2] : z);
   }
   finCoor.close();
-  short t;
-  std::vector<short> pred;
+  long long it;
+  double p, t;
+  std::vector<T_T> pred;
+  std::map<V3, T_T> qSSMap;
   std::vector<int> tSVector = GetTimeStepsVector();
-  std::map<V3, short> qSSMap;
   for (int i = 0; i < tSVector.size() - 1; i++) {
     for (int j = tSVector[i]; j < tSVector[i + 1]; j++) {
       std::string tempFile = std::to_string(j).insert(0, "/t-");
@@ -53,20 +50,25 @@ void Decompress(const char *inputDir, const char *outputDir) {
       if (i == 0 || i == tSVector.size() - 2) {
         if (j == tSVector.front()) {
           for (int k = 0; k < numOfVoxel; k++) {
-            finTemp >> t;
+            finTemp >> it;
+            p = GetPrec(std::stod(coor[k][0]), std::stod(coor[k][1]),
+                        std::stod(coor[k][2]));
+            t = it * p;
             fout << coor[k][0] << "\t" << coor[k][1] << "\t" << coor[k][2]
                  << "\t" << t << std::endl;
-            pred.push_back(t);
+            pred.push_back(T_T(t, p));
           }
         } else {
           BM bm(bitmapFile.c_str(), numOfVoxel);
           for (int k = 0; k < numOfVoxel; k++) {
             if (bm.check(k)) {
-              finTemp >> t;
-              pred[k] += t;
+              finTemp >> it;
+              fout << coor[k][0] << "\t" << coor[k][1] << "\t" << coor[k][2]
+                   << "\t" << pred[k].updateIntTemp(it) << std::endl;
+            } else {
+              fout << coor[k][0] << "\t" << coor[k][1] << "\t" << coor[k][2]
+                   << "\t" << pred[k].getTemp() << std::endl;
             }
-            fout << coor[k][0] << "\t" << coor[k][1] << "\t" << coor[k][2]
-                 << "\t" << pred[k] << std::endl;
           }
         }
       } else {
@@ -77,14 +79,15 @@ void Decompress(const char *inputDir, const char *outputDir) {
           qSSMap.clear();
           for (int k = 0; k < numOfVoxel; k++) {
             if (bm.check(k)) {
-              finTemp >> t;
-              pred[k] += t;
+              finTemp >> it;
+              fout << coor[k][0] << "\t" << coor[k][1] << "\t" << coor[k][2]
+                   << "\t" << pred[k].updateIntTemp(it) << std::endl;
+            } else {
+              fout << coor[k][0] << "\t" << coor[k][1] << "\t" << coor[k][2]
+                   << "\t" << pred[k].getTemp() << std::endl;
             }
-            fout << coor[k][0] << "\t" << coor[k][1] << "\t" << coor[k][2]
-                 << "\t" << pred[k] << std::endl;
-            V3 v(std::stod(coor[k][0]) - x0, std::stod(coor[k][1]) - y0,
-                 std::stod(coor[k][2]) - z0);
-            qSSMap[v] = pred[k];
+            qSSMap[V3(std::stod(coor[k][0]) - x0, std::stod(coor[k][1]) - y0,
+                      std::stod(coor[k][2]) - z0)] = pred[k];
           }
         } else {
           for (int k = 0; k < numOfVoxel; k++) {
@@ -94,11 +97,11 @@ void Decompress(const char *inputDir, const char *outputDir) {
             if (l != qSSMap.end() && !bm.check(k)) {
               pred[k] = l->second;
             } else if (bm.check(k)) {
-              finTemp >> t;
-              pred[k] += t;
+              finTemp >> it;
+              pred[k].updateIntTemp(it);
             }
             fout << coor[k][0] << "\t" << coor[k][1] << "\t" << coor[k][2]
-                 << "\t" << pred[k] << std::endl;
+                 << "\t" << pred[k].getTemp() << std::endl;
           }
         }
       }

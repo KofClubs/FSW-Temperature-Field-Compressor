@@ -1,5 +1,6 @@
 #include "vector3.h"
 
+#include <cmath>
 #include <cstdlib>
 
 Vector3::Vector3(double a = 0.0, double b = 0.0, double c = 0.0)
@@ -19,4 +20,9 @@ bool Vector3::operator<(const Vector3 &v) const {
   } else {
     return false;
   }
+}
+
+double Vector3::mod(const Vector3 &v) {
+  return std::sqrt(std::pow(x - v.x, 2) + std::pow(y - v.y, 2) +
+                   std::pow(z - v.z, 2));
 }
