@@ -9,6 +9,8 @@
 #include "user_defined.h"
 #include "vector3.h"
 
+#define EPSILON 1.0e-5
+
 void Select(const char *inputDir, const char *outputFile, double x0, double y0,
             double z0) {
   std::vector<int> tSVector = GetTimeStepsVector();
@@ -43,6 +45,9 @@ void Select(const char *inputDir, const char *outputFile, double x0, double y0,
           lineCount = count;
         }
         fin >> x;
+      }
+      if (m >= EPSILON) {
+        exit(VOXEL_NOT_FOUND);
       }
     } else {
       for (int j = 0; j <= lineCount; j++) {

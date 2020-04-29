@@ -5,9 +5,11 @@
 
 #include "exit_status.h"
 
+#define EPSILON 1.0e-7
+
 Temp_t::Temp_t() {}
 
-Temp_t::Temp_t(double t, double p) : epsilon(1.0e-7) {
+Temp_t::Temp_t(double t, double p) : epsilon(EPSILON) {
   if (t < 0) {
     exit(TEMPERATURE_MINUS);
   }

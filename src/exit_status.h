@@ -7,5 +7,6 @@
 #define DATA_FILE_EMPTY 4
 #define TEMPERATURE_MINUS 5
 #define PRECISION_NON_POSITIVE 6
+#define VOXEL_NOT_FOUND 7
 
 #endif

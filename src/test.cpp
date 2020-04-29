@@ -54,12 +54,12 @@ void Test(const char *firstDir, const char *secondDir) {
     fin2.close();
   }
   if (!flag) {
-    std::cout << "校验完毕，不存在错误！" << std::endl;
+    std::cout << "测试完毕，解压输出跟压缩输入一致！" << std::endl;
   }
 }
 
 void PrintHeader() {
-  std::cout << "解压输出存在错误！" << std::endl;
+  std::cout << "解压输出跟压缩输入不一致！" << std::endl;
   std::cout << "类型"
             << "\t"
             << "文件名"
