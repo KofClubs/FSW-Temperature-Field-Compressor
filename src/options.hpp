@@ -22,8 +22,10 @@ char GetOpt(char *arg) {
       return 'c';
     case 'd':
       return 'd';
-    case 'q':
-      return 'q';
+    case 't':
+      return 't';
+    case 's':
+      return 's';
     default:
       std::cout << "Invalid option!" << std::endl;
       exit(INVALID_OPTION);
@@ -45,11 +47,13 @@ void PrintHelpInfo() {
   std::cout << "选项包括且限于:" << std::endl;
   std::cout << "-h\n\t在命令行打印帮助信息" << std::endl;
   std::cout << "-v\n\t在命令行打印版本信息" << std::endl;
-  std::cout << "-c [目录] [目录]\t压缩器\n\t指定输入目录、输出目录"
+  std::cout << "-c [目录] [目录]\n压缩器\t指定输入目录、输出目录" << std::endl;
+  std::cout << "-d [目录] [目录]\n解压器\t指定压缩输出目录、解压输出目录"
             << std::endl;
-  std::cout << "-d [目录] [目录]\t解压器\n\t指定压缩输出目录、解压输出目录"
+  std::cout << "-t [目录] [目录]\n测试器\t压缩输入目录、解压输出目录"
             << std::endl;
-  std::cout << "-q [目录] [目录]\t校验器\n\t压缩输入目录、解压输出目录"
+  std::cout << "-s [目录] [文件] [X坐标] [Y坐标] "
+               "[Z坐标]\n查询器\t指定输入目录、输出文件、体元坐标"
             << std::endl;
 }
 
@@ -60,7 +64,7 @@ void PrintVerInfo() {
   std::cout << "ftfc - FSW Temperature Field Compressor" << std::endl;
   std::cout << "综合论文训练，搅拌摩擦焊工件温度场仿真数据压缩器" << std::endl;
   std::cout << "Copyright (C) 张展鹏" << std::endl;
-  std::cout << "版本：0.6.0" << std::endl;
+  std::cout << "版本：0.7.0" << std::endl;
   std::cout << "使用选项-h获得帮助" << std::endl;
 }
 

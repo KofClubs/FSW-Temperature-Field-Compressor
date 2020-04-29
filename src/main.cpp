@@ -2,11 +2,12 @@
 #include <cstring>
 #include <iostream>
 
-#include "check.h"
 #include "compress.h"
 #include "decompress.h"
 #include "exit_status.h"
 #include "options.hpp"
+#include "select.h"
+#include "test.h"
 
 int main(int argc, char **argv) {
   if (argc == 1) {
@@ -32,9 +33,13 @@ int main(int argc, char **argv) {
       Decompress(argv[i + 1], argv[i + 2]);
       i += 3;
       break;
-    case 'q':
-      Check(argv[i + 1], argv[i + 2]);
+    case 't':
+      Test(argv[i + 1], argv[i + 2]);
       i += 3;
+    case 's':
+      Select(argv[i + 1], argv[i + 2], std::atof(argv[i + 3]),
+             std::atof(argv[i + 4]), std::atof(argv[i + 5]));
+      i += 6;
     }
   }
   return 0;

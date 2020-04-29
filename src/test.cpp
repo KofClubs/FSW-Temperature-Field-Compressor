@@ -1,4 +1,4 @@
-#include "check.h"
+#include "test.h"
 
 #include <fstream>
 #include <iostream>
@@ -10,7 +10,7 @@
 
 void PrintHeader();
 
-void Check(const char *firstDir, const char *secondDir) {
+void Test(const char *firstDir, const char *secondDir) {
   std::vector<int> tSVector = GetTimeStepsVector();
   bool flag = false; /* 错误存在性标记 */
   for (int i = tSVector.front(); i < tSVector.back(); i++) {
