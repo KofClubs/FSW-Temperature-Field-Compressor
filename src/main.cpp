@@ -36,6 +36,7 @@ int main(int argc, char **argv) {
     case 't':
       Test(argv[i + 1], argv[i + 2]);
       i += 3;
+      break;
     case 's':
       Select(argv[i + 1], argv[i + 2], std::atof(argv[i + 3]),
              std::atof(argv[i + 4]), std::atof(argv[i + 5]));

@@ -20,9 +20,8 @@ std::string GetFilename(int);
 void GetCurrentWeld(int, double &, double &, double &);
 
 /**
- * 获得准稳态时间步区间[0, lo, mi1, mi2, ... ,mi(n-1), hi, N)
- * 向量的元素单调递增，至少包含“0”和“N”
- * 向量顺序前2个元素分别是0和准稳态开始时间步，逆序前2个元素分别是时间步数目和准稳态结束时间步
+ * 获得时间步向量{e0,e1,e2,e3}，长度是4
+ * [e0, e3)是搅拌摩擦焊全过程区间，[e1,e2)被搅拌头X方向移动区间包含
  * 返回值：时间步向量
  */
 std::vector<int> GetTimeStepsVector();

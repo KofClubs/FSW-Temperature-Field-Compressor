@@ -36,7 +36,21 @@ void Decompress(const char *inputDir, const char *outputDir) {
   double p, t;
   std::vector<T_T> pred;
   std::map<V3, T_T> qSSMap;
-  std::vector<int> tSVector = GetTimeStepsVector();
+  std::vector<int> tSVector;
+  std::string tSVFile("/tsv.txt");
+  tSVFile.insert(0, inputDir);
+  std::ifstream finTSV(tSVFile);
+  if (finTSV.is_open()) {
+    int ts;
+    finTSV >> ts;
+    while (!finTSV.eof()) {
+      tSVector.push_back(ts);
+      finTSV >> ts;
+    }
+    finTSV.close();
+  } else {
+    tSVector = GetTimeStepsVector();
+  }
   for (int i = 0; i < tSVector.size() - 1; i++) {
     for (int j = tSVector[i]; j < tSVector[i + 1]; j++) {
       std::string tempFile = std::to_string(j).insert(0, "/t-");

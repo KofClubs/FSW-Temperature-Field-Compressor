@@ -24,7 +24,7 @@ void GetCurrentWeld(int t, double &x, double &y, double &z) {
 }
 
 std::vector<int> GetTimeStepsVector() {
-  return std::vector<int>({0, 57, 77, 97, 117, 144});
+  return std::vector<int>({0, 34, 117, 144});
 }
 
 double GetPrec(double x, double y, double z) {

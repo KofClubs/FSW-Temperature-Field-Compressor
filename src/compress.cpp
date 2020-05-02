@@ -1,5 +1,7 @@
 #include "compress.h"
 
+#include <algorithm>
+#include <cmath>
 #include <cstdlib>
 #include <fstream>
 #include <map>
@@ -12,17 +14,30 @@
 #include "user_defined.h"
 #include "vector3.h"
 
+// 当搅拌头坐标系下温度相同的体元数目跟全体体元数目的比不小于这个阈值时，认为进入准稳态
+#define QSS_TH 0.1
+// 准稳态子区间数目，等效于零状态数目
+#define NUM_OF_QSS_SUBINR 8
+
 /**
  * 输入文件，输出文件：坐标、化整温差、温度变化比特图、体元数目
  */
 std::string inputFile, coorFile, tempFile, bitmapFile, numOfVoxelFile;
-std::vector<T_T> pred;    /* 工件坐标系温度场 */
+std::vector<int> tSVector; /* 时间步向量 */
+std::vector<T_T> pred;     /* 工件坐标系温度场 */
 std::map<V3, T_T> qSSMap; /* 准稳态零状态下搅拌头坐标系温度场 */
 
 /**
  * 读入第1帧数据，初始化体积元的坐标和初始温度
  */
 void Init();
+
+/**
+ * 更新时间步向量，加入若干准稳态零状态
+ * 参数表：输入目录、输出目录
+ * 返回值：时间步向量是否被更新
+ */
+void UpdateTSVector(const char *&, const char *&);
 
 /**
  * 读入准稳态零状态数据帧，初始化准稳态下搅拌头坐标系温度场
@@ -42,7 +57,7 @@ void UpdateNonSteadyState();
 void UpdateQuasiSteadyState(int);
 
 void Compress(const char *inputDir, const char *outputDir) {
-  std::vector<int> tSVector = GetTimeStepsVector(); /* 时间步向量 */
+  tSVector = GetTimeStepsVector();
   for (int i = 0; i < tSVector.size() - 1; i++) {
     for (int j = tSVector[i]; j < tSVector[i + 1]; j++) {
       inputFile = GetFilename(j).insert(0, "/");
@@ -57,6 +72,7 @@ void Compress(const char *inputDir, const char *outputDir) {
           numOfVoxelFile = "/nov.txt";
           numOfVoxelFile.insert(0, outputDir);
           Init();
+          UpdateTSVector(inputDir, outputDir);
         } else {
           bitmapFile = std::to_string(j).insert(0, "/b-");
           bitmapFile.insert(0, outputDir);
@@ -109,11 +125,61 @@ void Init() {
     predX = x;
     fin >> x;
   }
-  foutNOV << numOfVoxel << std::endl;
   fin.close();
   foutCoor.close();
   foutTemp.close();
+  foutNOV << numOfVoxel << std::endl;
   foutNOV.close();
+}
+
+void UpdateTSVector(const char *&inputDir, const char *&outputDir) {
+  std::string qSSFile =
+      GetFilename(tSVector[tSVector.size() - 2] - 1).insert(0, "/");
+  qSSFile.insert(0, inputDir);
+  std::ifstream finQSS(qSSFile);
+  double x, y, z, t, x0, y0, z0;
+  GetCurrentWeld(tSVector[tSVector.size() - 2] - 1, x0, y0, z0);
+  for (int i = 0; i < pred.size(); i++) {
+    finQSS >> x >> y >> z >> t;
+    qSSMap[V3(x - x0, y - y0, z - z0)] = T_T(t, pred[i].getPrec());
+  }
+  finQSS.close();
+  for (int i = tSVector[1]; i < tSVector[tSVector.size() - 2] - 1; i++) {
+    std::string iFile = GetFilename(i).insert(0, "/");
+    iFile.insert(0, inputDir);
+    GetCurrentWeld(i, x0, y0, z0);
+    std::ifstream fin(iFile);
+    int numOfFound = 0, numOfEqual = 0;
+    for (int j = 0; j < pred.size(); j++) {
+      fin >> x >> y >> z >> t;
+      auto k = qSSMap.find(V3(x - x0, y - y0, z - z0));
+      if (k != qSSMap.end()) {
+        numOfFound++;
+        if (T_T(t, pred[j].getPrec()) == k->second) {
+          numOfEqual++;
+        }
+      }
+    }
+    fin.close();
+    if ((double)numOfEqual / (double)numOfFound >= QSS_TH) {
+      tSVector.erase(tSVector.begin() + 1);
+      for (int j = 1; j <= NUM_OF_QSS_SUBINR; j++) {
+        tSVector.insert(
+            tSVector.begin() + 1,
+            std::lround((double)(j * i + (NUM_OF_QSS_SUBINR - j) *
+                                             tSVector[tSVector.size() - 2]) /
+                        (double)NUM_OF_QSS_SUBINR));
+      }
+      std::string tSVFile("/tsv.txt");
+      tSVFile.insert(0, outputDir);
+      std::ofstream fout(tSVFile);
+      for (auto j : tSVector) {
+        fout << j << std::endl;
+      }
+      fout.close();
+      return;
+    }
+  }
 }
 
 void InitQuasiSteadyState(int ts) {

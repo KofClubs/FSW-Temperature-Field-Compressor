@@ -16,6 +16,7 @@ public:
   Temp_t(double, double); /* 参数表：温度、精度 */
 public:
   long long getIntTemp(); /* 化整温度 */
+  double getPrec();       /* 精度 */
   double getTemp();       /* 双精度浮点数型温度 */
   double updateIntTemp(long long); /* 更新化整温度，传入化整温差，返回新温度 */
   long long updateTemp(double); /* 更新温度，传入新温度，返回化整温差 */

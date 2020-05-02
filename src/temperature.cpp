@@ -22,6 +22,8 @@ Temp_t::Temp_t(double t, double p) : epsilon(EPSILON) {
 
 long long Temp_t::getIntTemp() { return intTemp; }
 
+double Temp_t::getPrec() { return prec; }
+
 double Temp_t::getTemp() { return intTemp * prec; }
 
 double Temp_t::updateIntTemp(long long it) {
