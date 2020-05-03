@@ -5,15 +5,16 @@
 
 #include "exit_status.h"
 
+// 建议比温度精度高至少1个数量级
 #define EPSILON 1.0e-7
 
 Temp_t::Temp_t() {}
 
 Temp_t::Temp_t(double t, double p) : epsilon(EPSILON) {
-  if (t < 0) {
+  if (t < 0) /* 开氏温标不能小于零 */ {
     exit(TEMPERATURE_MINUS);
   }
-  if (p <= 0) {
+  if (p <= 0) /* 精度不能是非正数 */ {
     exit(PRECISION_NON_POSITIVE);
   }
   intTemp = std::llround(t / p);

@@ -20,8 +20,8 @@ std::string GetFilename(int);
 void GetCurrentWeld(int, double &, double &, double &);
 
 /**
- * 获得时间步向量{e0,e1,e2,e3}，长度是4
- * [e0, e3)是搅拌摩擦焊全过程区间，[e1,e2)被搅拌头X方向移动区间包含
+ * 获得时间步向量{e0,e1,e2,e3}
+ * [e0, e3)是搅拌摩擦焊全过程时间步区间，[e1,e2)被搅拌头X方向移动时间步区间包含
  * 返回值：时间步向量
  */
 std::vector<int> GetTimeStepsVector();

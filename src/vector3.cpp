@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdlib>
 
+// 建议比体元坐标精度高至少1个数量级
 #define EPSILON 1.0e-7
 
 Vector3::Vector3(double a = 0.0, double b = 0.0, double c = 0.0)
@@ -12,6 +13,7 @@ bool Vector3::operator==(const Vector3 &v) const {
   return std::abs(x - v.x) < epsilon && std::abs(y - v.y) < epsilon &&
          std::abs(z - v.z) < epsilon;
 }
+
 bool Vector3::operator<(const Vector3 &v) const {
   if (std::abs(x - v.x) >= epsilon) {
     return x < v.x;

@@ -1,6 +1,4 @@
 #include <cstdlib>
-#include <cstring>
-#include <iostream>
 
 #include "compress.h"
 #include "decompress.h"
@@ -17,27 +15,39 @@ int main(int argc, char **argv) {
   while (i < argc) {
     char opt = GetOpt(argv[i]);
     switch (opt) {
-    case 'h':
+    case 'h': /* 打印帮助信息 */
       PrintHelpInfo();
       i++;
       break;
-    case 'v':
+    case 'v': /* 打印版本信息 */
       PrintVerInfo();
       i++;
       break;
-    case 'c':
+    case 'c': /* 压缩 */
+      if (i + 3 > argc) {
+        exit(ARGV_TOO_SHORT);
+      }
       Compress(argv[i + 1], argv[i + 2]);
       i += 3;
       break;
-    case 'd':
+    case 'd': /* 解压 */
+      if (i + 3 > argc) {
+        exit(ARGV_TOO_SHORT);
+      }
       Decompress(argv[i + 1], argv[i + 2]);
       i += 3;
       break;
-    case 't':
+    case 't': /* 测试 */
+      if (i + 3 > argc) {
+        exit(ARGV_TOO_SHORT);
+      }
       Test(argv[i + 1], argv[i + 2]);
       i += 3;
       break;
-    case 's':
+    case 's': /* 查询 */
+      if (i + 6 > argc) {
+        exit(ARGV_TOO_SHORT);
+      }
       Select(argv[i + 1], argv[i + 2], std::atof(argv[i + 3]),
              std::atof(argv[i + 4]), std::atof(argv[i + 5]));
       i += 6;

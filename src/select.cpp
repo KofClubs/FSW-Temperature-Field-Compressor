@@ -9,7 +9,8 @@
 #include "user_defined.h"
 #include "vector3.h"
 
-#define EPSILON 1.0e-5
+// 建议稍大于相邻体元最短距离的0.8660倍
+#define EPSILON 0.8661e-4
 
 void Select(const char *inputDir, const char *outputFile, double x0, double y0,
             double z0) {
@@ -39,7 +40,7 @@ void Select(const char *inputDir, const char *outputFile, double x0, double y0,
       while (!fin.eof()) {
         fin >> y >> z >> t;
         count++;
-        if (v0.mod(V3(x, y, z)) < m) {
+        if (v0.mod(V3(x, y, z)) < m) /* 更新条件：找到更近的体元 */ {
           m = v0.mod(V3(x, y, z));
           t0 = t;
           lineCount = count;

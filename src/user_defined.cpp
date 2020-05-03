@@ -2,6 +2,10 @@
 
 #include <algorithm>
 
+/**
+ * 请实现这些函数，它们是不可缺少的，功能详见user_defined.h
+ */
+
 std::string GetFilename(int t) {
   char a, b, c;
   a = (char)(t / 100);

@@ -1,6 +1,5 @@
 #include "compress.h"
 
-#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <fstream>
@@ -168,7 +167,7 @@ void UpdateTSVector(const char *&inputDir, const char *&outputDir) {
             tSVector.begin() + 1,
             std::lround((double)(j * i + (NUM_OF_QSS_SUBINR - j) *
                                              tSVector[tSVector.size() - 2]) /
-                        (double)NUM_OF_QSS_SUBINR));
+                        NUM_OF_QSS_SUBINR));
       }
       std::string tSVFile("/tsv.txt");
       tSVFile.insert(0, outputDir);
@@ -232,9 +231,9 @@ void UpdateQuasiSteadyState(int ts) {
     fin >> x >> y >> z >> t;
     long long intTempDiff = pred[i].updateTemp(t);
     auto j = qSSMap.find(V3(x - x0, y - y0, z - z0));
-    // 输出的情形：1. 搜索到且在搅拌头坐标系温度变化；2. 没有搜索到且温度变化
-    if (j != qSSMap.end() && pred[i] != j->second ||
-        j == qSSMap.end() && intTempDiff != 0) {
+    if (j != qSSMap.end() &&
+            pred[i] != j->second /* 搜索到且在搅拌头坐标系温度变化 */
+        || j == qSSMap.end() && intTempDiff != 0 /* 没有搜索到且温度变化 */) {
       foutTemp << intTempDiff << std::endl;
       bm.set(i);
     }

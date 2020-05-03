@@ -8,6 +8,9 @@
 #include "temperature.h"
 #include "user_defined.h"
 
+/**
+ * 打印错误表头
+ */
 void PrintHeader();
 
 void Test(const char *firstDir, const char *secondDir) {
@@ -27,7 +30,7 @@ void Test(const char *firstDir, const char *secondDir) {
     while (!fin1.eof()) {
       fin1 >> y1 >> z1 >> t1;
       fin2 >> x2 >> y2 >> z2 >> t2;
-      if (x1 != x2 || y1 != y2 || z1 != z2) {
+      if (x1 != x2 || y1 != y2 || z1 != z2) /* 坐标不一致 */ {
         if (!flag) {
           PrintHeader();
           flag = true;
@@ -36,9 +39,7 @@ void Test(const char *firstDir, const char *secondDir) {
                   << "\t" << GetFilename(i) << "\t" << lineCount << std::endl;
       } else {
         p = GetPrec(std::stod(x1), std::stod(y1), std::stod(z1));
-        T_T tt1(t1, p);
-        T_T tt2(t2, p);
-        if (tt1 != tt2) {
+        if (T_T(t1, p) != T_T(t2, p)) /* 温度不一致 */ {
           if (!flag) {
             PrintHeader();
             flag = true;
