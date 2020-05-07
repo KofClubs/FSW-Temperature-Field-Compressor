@@ -13,8 +13,10 @@
 #include "user_defined.h"
 #include "vector3.h"
 
+// 被用来判别准稳态的体元集合到搅拌头轴线距离的上界
+#define SUP_R 0.020
 // 当搅拌头坐标系下温度相同的体元数目跟全体体元数目的比不小于这个阈值时，认为进入准稳态
-#define QSS_TH 0.1
+#define QSS_SD_TH 8.0
 // 准稳态子区间数目，等效于零状态数目
 #define NUM_OF_QSS_SUBINR 8
 
@@ -148,36 +150,40 @@ void UpdateTSVector(const char *&inputDir, const char *&outputDir) {
     iFile.insert(0, inputDir);
     GetCurrentWeld(i, x0, y0, z0);
     std::ifstream fin(iFile);
-    int numOfFound = 0, numOfEqual = 0;
+    int n = 0;
+    double sd = 0;
     for (int j = 0; j < pred.size(); j++) {
       fin >> x >> y >> z >> t;
-      auto k = qSSMap.find(V3(x - x0, y - y0, z - z0));
-      if (k != qSSMap.end()) {
-        numOfFound++;
-        if (T_T(t, pred[j].getPrec()) == k->second) {
-          numOfEqual++;
+      if (std::pow(std::pow(x - x0, 2) + std::pow(y - y0, 2), 0.5) <= SUP_R) {
+        auto k = qSSMap.find(V3(x - x0, y - y0, z - z0));
+        if (k != qSSMap.end()) {
+          n++;
+          sd += std::pow(t - k->second.getTemp(), 2);
         }
       }
     }
-    fin.close();
-    if ((double)numOfEqual / (double)numOfFound >= QSS_TH) {
-      tSVector.erase(tSVector.begin() + 1);
-      for (int j = 1; j <= NUM_OF_QSS_SUBINR; j++) {
-        tSVector.insert(
-            tSVector.begin() + 1,
-            std::lround((double)(j * i + (NUM_OF_QSS_SUBINR - j) *
-                                             tSVector[tSVector.size() - 2]) /
-                        NUM_OF_QSS_SUBINR));
+    if (n > 0) {
+      sd = std::pow(sd / n, 0.5);
+      if (sd < QSS_SD_TH) {
+        tSVector.erase(tSVector.begin() + 1);
+        for (int j = 1; j <= NUM_OF_QSS_SUBINR; j++) {
+          tSVector.insert(
+              tSVector.begin() + 1,
+              std::lround((double)(j * i + (NUM_OF_QSS_SUBINR - j) *
+                                               tSVector[tSVector.size() - 2]) /
+                          NUM_OF_QSS_SUBINR));
+        }
+        std::string tSVFile("/tsv.txt");
+        tSVFile.insert(0, outputDir);
+        std::ofstream fout(tSVFile);
+        for (auto j : tSVector) {
+          fout << j << std::endl;
+        }
+        fout.close();
+        return;
       }
-      std::string tSVFile("/tsv.txt");
-      tSVFile.insert(0, outputDir);
-      std::ofstream fout(tSVFile);
-      for (auto j : tSVector) {
-        fout << j << std::endl;
-      }
-      fout.close();
-      return;
     }
+    fin.close();
   }
 }
 
