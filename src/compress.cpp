@@ -180,7 +180,7 @@ void UpdateTSVector(const char *&inputDir, const char *&outputDir) {
           fout << j << std::endl;
         }
         fout.close();
-        return;
+        break;
       }
     }
     fin.close();
