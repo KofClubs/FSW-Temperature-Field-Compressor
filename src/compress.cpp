@@ -13,6 +13,8 @@
 #include "user_defined.h"
 #include "vector3.h"
 
+// 更新时间步向量过程中使用的温度精度
+#define QSS_PREC 1.0
 // 被用来判别准稳态的体元集合到搅拌头轴线距离的上界
 #define SUP_R 0.020
 // 当搅拌头坐标系下温度相同的体元数目跟全体体元数目的比不小于这个阈值时，认为进入准稳态
@@ -142,7 +144,7 @@ void UpdateTSVector(const char *&inputDir, const char *&outputDir) {
   GetCurrentWeld(tSVector[tSVector.size() - 2] - 1, x0, y0, z0);
   for (int i = 0; i < pred.size(); i++) {
     finQSS >> x >> y >> z >> t;
-    qSSMap[V3(x - x0, y - y0, z - z0)] = T_T(t, pred[i].getPrec());
+    qSSMap[V3(x - x0, y - y0, z - z0)] = T_T(t, QSS_PREC);
   }
   finQSS.close();
   for (int i = tSVector[1]; i < tSVector[tSVector.size() - 2] - 1; i++) {
