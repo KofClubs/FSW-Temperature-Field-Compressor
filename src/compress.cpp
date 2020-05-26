@@ -13,19 +13,18 @@
 #include "user_defined.h"
 #include "vector3.h"
 
-// 更新时间步向量过程中使用的温度精度
+// 判别准稳态建立时间步使用的温度精度
 #define QSS_PREC 1.0
-// 被用来判别准稳态的体元集合到搅拌头轴线距离的上界
-#define SUP_R 0.020
-// 当搅拌头坐标系下温度相同的体元数目跟全体体元数目的比不小于这个阈值时，认为进入准稳态
+// 被用来判别准稳态建立时间步的体元集合到搅拌头轴线距离上界关于搅拌头轴肩半径的倍数
+#define MULTI_RS 2
+// 判别准稳态建立时间步的标准差阈值
 #define QSS_SD_TH 8.0
-// 准稳态子区间数目，等效于零状态数目
-#define NUM_OF_QSS_SUBINR 8
+// 准稳态子区间数目，等于零状态数目
+#define NUM_OF_QSS_SUBINR 19
 
-/**
- * 输入文件，输出文件：坐标、化整温差、温度变化比特图、体元数目
- */
-std::string inputFile, coorFile, tempFile, bitmapFile, numOfVoxelFile;
+std::string inputFile, coorFile, tempFile, bitmapFile,
+    numOfVoxelFile; /* 输入文件，输出文件：坐标、化整温差、温度变化比特图、体元数目
+                     */
 std::vector<int> tSVector; /* 时间步向量 */
 std::vector<T_T> pred;     /* 工件坐标系温度场 */
 std::map<V3, T_T> qSSMap; /* 准稳态零状态下搅拌头坐标系温度场 */
@@ -38,7 +37,6 @@ void Init();
 /**
  * 更新时间步向量，加入若干准稳态零状态
  * 参数表：输入目录、输出目录
- * 返回值：时间步向量是否被更新
  */
 void UpdateTSVector(const char *&, const char *&);
 
@@ -69,14 +67,14 @@ void Compress(const char *inputDir, const char *outputDir) {
       tempFile.insert(0, outputDir);
       int numOfVoxel = 0;
       if (i == 0 || i == tSVector.size() - 2) /* 非稳态 */ {
-        if (j == tSVector.front()) /* 零时间步 */ {
+        if (j == tSVector.front()) /* 第1个时间步 */ {
           coorFile = "/coor.txt";
           coorFile.insert(0, outputDir);
           numOfVoxelFile = "/nov.txt";
           numOfVoxelFile.insert(0, outputDir);
           Init();
           UpdateTSVector(inputDir, outputDir);
-        } else {
+        } else /* 其他非稳态时间步 */ {
           bitmapFile = std::to_string(j).insert(0, "/b-");
           bitmapFile.insert(0, outputDir);
           UpdateNonSteadyState();
@@ -86,7 +84,7 @@ void Compress(const char *inputDir, const char *outputDir) {
         bitmapFile.insert(0, outputDir);
         if (j == tSVector[i]) /* 准稳态零状态 */ {
           InitQuasiSteadyState(j);
-        } else {
+        } else /* 准稳态非零状态 */ {
           UpdateQuasiSteadyState(j);
         }
       }
@@ -156,7 +154,8 @@ void UpdateTSVector(const char *&inputDir, const char *&outputDir) {
     double sd = 0;
     for (int j = 0; j < pred.size(); j++) {
       fin >> x >> y >> z >> t;
-      if (std::pow(std::pow(x - x0, 2) + std::pow(y - y0, 2), 0.5) <= SUP_R) {
+      if (std::pow(std::pow(x - x0, 2) + std::pow(y - y0, 2), 0.5) <=
+          GetRadiusOfShoulder() * MULTI_RS) {
         auto k = qSSMap.find(V3(x - x0, y - y0, z - z0));
         if (k != qSSMap.end()) {
           n++;

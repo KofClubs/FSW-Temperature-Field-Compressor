@@ -1,5 +1,6 @@
 #include "select.h"
 
+#include <algorithm>
 #include <cstdlib>
 #include <fstream>
 #include <string>
@@ -9,14 +10,11 @@
 #include "user_defined.h"
 #include "vector3.h"
 
-// 建议稍大于相邻体元最短距离的0.8660倍
-#define EPSILON 0.8661e-4
-
 void Select(const char *inputDir, const char *outputFile, double x0, double y0,
             double z0) {
   std::vector<int> tSVector = GetTimeStepsVector();
   std::ofstream fout(outputFile);
-  int lineCount;
+  int lineCount = 0;
   for (int i = tSVector.front(); i < tSVector.back(); i++) {
     std::string inputFile = GetFilename(i).insert(0, "/");
     inputFile.insert(0, inputDir);
@@ -25,7 +23,7 @@ void Select(const char *inputDir, const char *outputFile, double x0, double y0,
       exit(DATA_FILE_NOT_FOUND);
     }
     V3 v0(x0, y0, z0);
-    double x, y, z, m;
+    double x, y, z, xMin, xMax, yMin, yMax, zMin, zMax, m, m0;
     std::string t, t0;
     if (i == tSVector.front()) {
       fin >> x;
@@ -33,21 +31,32 @@ void Select(const char *inputDir, const char *outputFile, double x0, double y0,
         exit(DATA_FILE_EMPTY);
       }
       fin >> y >> z >> t;
-      m = v0.mod(V3(x, y, z));
+      xMin = xMax = x;
+      yMin = yMax = y;
+      zMin = zMax = z;
+      m0 = v0.mod(V3(x, y, z));
       t0 = t;
       int count = 0;
       fin >> x;
       while (!fin.eof()) {
         fin >> y >> z >> t;
         count++;
-        if (v0.mod(V3(x, y, z)) < m) /* 更新条件：找到更近的体元 */ {
-          m = v0.mod(V3(x, y, z));
+        xMin = std::min(x, xMin);
+        xMax = std::max(x, xMax);
+        yMin = std::min(y, yMin);
+        yMax = std::max(y, yMax);
+        zMin = std::min(z, zMin);
+        zMax = std::max(z, zMax);
+        m = v0.mod(V3(x, y, z));
+        if (m < m0) /* 更新条件：找到更近的体元 */ {
+          m0 = m;
           t0 = t;
           lineCount = count;
         }
         fin >> x;
       }
-      if (m >= EPSILON) {
+      if (x0 < xMin || x0 > xMax || y0 < yMin || y0 > yMax || z0 < zMin ||
+          z0 > zMax) {
         exit(VOXEL_NOT_FOUND);
       }
     } else {

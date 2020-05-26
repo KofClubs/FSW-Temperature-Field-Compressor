@@ -6,7 +6,7 @@
  */
 struct Vector3 {
   double x, y, z; /* X、Y、Z坐标 */
-  double epsilon; /* 无穷小量，当任意维坐标差的绝对值小于它时，认为相等 */
+  double epsilon; /* 当任意维坐标差的绝对值均小于这个变量时，认为相等 */
   Vector3(double, double, double); /* 赋值构造，缺省值{0.0, 0.0, 0.0} */
   bool operator==(const Vector3 &) const; /* 二点坐标认为相等 */
   bool operator<(const Vector3 &) const;  /* 用来排序，无实际意义 */

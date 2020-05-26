@@ -10,15 +10,14 @@ private:
   char *M; /* 比特图字符串 */
   int N;   /* 字符串长度 */
 private:
-  void init(int); /* 内联函数，零初始化，参数表：比特数目下界 */
+  void init(int); /* 零初始化，参数表：比特数目 */
 public:
-  Bitmap(int); /* 零构造，参数表：比特数目下界 */
-  Bitmap(const char *,
-         int); /* 从文件拷贝构造，参数表：文件路径、比特数目下界 */
+  Bitmap(int); /* 零构造，参数表：比特数目 */
+  Bitmap(const char *, int); /* 从文件拷贝构造，参数表：文件路径、比特数目 */
   ~Bitmap(); /* 析构 */
 public:
-  void set(int);           /* 置“1”，参数表：比特序数 */
-  void unset(int);         /* 置“0”，参数表：比特序数 */
+  void set(int);           /* 置真，参数表：比特序数 */
+  void unset(int);         /* 置假，参数表：比特序数 */
   bool check(int);         /* 返回第r个比特对应的真假 */
   void dump(const char *); /* 输出到文件，参数表：文件路径 */
 };

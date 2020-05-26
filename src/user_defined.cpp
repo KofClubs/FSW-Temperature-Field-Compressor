@@ -16,6 +16,8 @@ std::string GetFilename(int t) {
   return s;
 }
 
+double GetRadiusOfShoulder() { return 0.010; }
+
 void GetCurrentWeld(int t, double &x, double &y, double &z) {
   if (t < 117) {
     x = std::max(-0.125, -0.125 + 0.003 * (t - 33));
@@ -32,8 +34,10 @@ std::vector<int> GetTimeStepsVector() {
 }
 
 double GetPrec(double x, double y, double z) {
+  /*
   if (y < -0.020 || y > 0.020) {
     return 4.0;
   }
+  */
   return 1.0;
 }

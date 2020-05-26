@@ -14,6 +14,12 @@
 std::string GetFilename(int);
 
 /**
+ * 获得搅拌头轴肩半径
+ * 返回值：搅拌头轴肩半径
+ */
+double GetRadiusOfShoulder();
+
+/**
  * 获得指定时间步的搅拌针头部坐标
  * 参数表：时间步、搅拌针头部X、Y、Z坐标
  */
