@@ -11,6 +11,7 @@ FSW-Temperature-Field-Compressor
 编译、构建、运行。
 
 ```
+$ mkdir obj bin
 $ make all
 $ cd bin
 $ ./ftfc -h # 获得帮助
